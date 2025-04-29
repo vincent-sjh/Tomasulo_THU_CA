@@ -21,5 +21,6 @@ public:
     StoreBufferSlot pop();
     StoreBufferSlot front();
     void flush();
+    unsigned lastptr(unsigned currentptr);
     std::optional<unsigned> query(unsigned addr, unsigned robIdx, unsigned robPopPtr);
 };

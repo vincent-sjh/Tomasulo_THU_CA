@@ -74,10 +74,28 @@ void StoreBuffer::flush() {
  * @return std::optional<unsigned> 如果在Store
  * Buffer中命中，返回对应值，否则返回std::nullopt
  */
+unsigned StoreBuffer::lastptr(unsigned currentptr){
+    unsigned p = currentptr? currentptr - 1 : ROB_SIZE - 1;
+    return p;
+}
 std::optional<unsigned> StoreBuffer::query(
     [[maybe_unused]] unsigned addr,
     [[maybe_unused]] unsigned robIdx,
     [[maybe_unused]] unsigned robPopPtr) {
-    // TODO: 完成 Store Buffer 的查询逻辑
-    throw std::runtime_error("Store Buffer query not implemented.");
+    // DONE COMPLETELY: 完成 Store Buffer 的查询逻辑
+    //throw std::runtime_error("Store Buffer query not implemented.");
+    unsigned ptr = lastptr(pushPtr);
+    unsigned mask = 0xFFFFFFFC;
+    while (true) {
+        bool addr_valid = buffer[ptr].valid;
+        bool mask_valid = (buffer[ptr].storeAddress & mask) == (addr & mask);
+        if(addr_valid && mask_valid) {
+            return std::make_optional(buffer[ptr].storeData);
+        }
+        if (ptr == popPtr) {
+            break;
+        }
+        ptr = lastptr(ptr);      
+    }
+    return std::nullopt;
 }

@@ -1,11 +1,14 @@
 #include "processor.h"
 
+
 struct BTBEntry {
     unsigned pc;
     unsigned target;
     unsigned counter;
     bool valid;
+    int state;
 };
+
 
 class FrontendWithPredict : public Frontend {
     BTBEntry btb[1024];
@@ -17,7 +20,6 @@ public:
     explicit FrontendWithPredict(const std::vector<unsigned> &inst);
     [[nodiscard]] unsigned calculateNextPC(unsigned pc) const override;
     void bpuBackendUpdate(const BpuUpdateData &x) override;
-
     void reset(const std::vector<unsigned> &inst, unsigned entry) override;
 };
 

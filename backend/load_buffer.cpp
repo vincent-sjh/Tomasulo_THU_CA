@@ -61,6 +61,19 @@ void LoadBuffer::check([[maybe_unused]] unsigned addr,
                        [[maybe_unused]] unsigned robIdx,
                        [[maybe_unused]] unsigned robPopPtr,
                        [[maybe_unused]] unsigned robPushPtr) {
-    // TODO: 完成 Load Buffer 的检验逻辑，寻找顺序错误的 load 指令
-    throw std::runtime_error("Load Buffer Check not implemented");
+    // DONE COMPLETELY: 完成 Load Buffer 的检验逻辑，寻找顺序错误的 load 指令
+    //throw std::runtime_error("Load Buffer Check not implemented");
+    for (unsigned i = 0; i < ROB_SIZE; ++i) {
+        LoadBufferSlot& slot = buffer[i];
+        unsigned load_robIdx = slot.robIdx;
+        bool rob_valid = ((load_robIdx > robIdx && robIdx >= robPopPtr) ||
+        (load_robIdx < robPopPtr && robIdx >= robPopPtr) ||
+        (load_robIdx > robIdx && load_robIdx < robPopPtr));
+        if (slot.valid && rob_valid) {
+            slot.invalidate = true;
+            Logger::Info("Invalidate load buffer:");
+            Logger::Info("Index: %u", slot.robIdx);
+            Logger::Info("Address: %08x, robIdx: %u\n", slot.loadAddress, slot.robIdx);
+        }
+    }
 }

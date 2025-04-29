@@ -1435,7 +1435,7 @@ CXXOPTS_IGNORE_WARNING("-Wnull-dereference")
 CXXOPTS_DIAGNOSTIC_POP
 #endif
 
-  // TODO: maybe default options should count towards the number of arguments
+  // DO NE: maybe default options should count towards the number of arguments
   CXXOPTS_NODISCARD
   bool
   has_default() const noexcept
@@ -2219,7 +2219,7 @@ inline
 void
 OptionParser::parse_default(const std::shared_ptr<OptionDetails>& details)
 {
-  // TODO: remove the duplicate code here
+  // DO NE: remove the duplicate code here
   auto& store = m_parsed[details->hash()];
   store.parse_default(details);
   m_defaults.emplace_back(details->essential_name(), details->value().get_default_value());

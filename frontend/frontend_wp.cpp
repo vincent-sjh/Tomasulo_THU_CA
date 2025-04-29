@@ -2,7 +2,7 @@
 #include "with_predict.h"
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
-#define BUFFER_DEPTH 1
+#define BUFFER_DEPTH 2
 FrontendWithPredict::FrontendWithPredict(const std::vector<unsigned> &inst)
     : Frontend(inst) {
     for (auto &entry : btb) {
@@ -22,8 +22,6 @@ BranchPredictBundle FrontendWithPredict::bpuFrontendUpdate(unsigned int pc) {
     // 取最低10位作为index
     // 因为btb大小为1024个条目
     auto index = pc & 0x3FF;
-    BranchPredictBundle predict_result;
-    predict_result.predictJump = false;
     bool btb_match = btb[index].valid && (btb[index].pc == pc);
     bool taken = (btb[index].state & (1<<(BUFFER_DEPTH-1))) && btb_match;
     return taken? BranchPredictBundle{.predictJump = true, .predictTarget = btb[index].target} : BranchPredictBundle{.predictJump = false, .predictTarget = pc + 4};
@@ -55,7 +53,7 @@ void FrontendWithPredict::bpuBackendUpdate(const BpuUpdateData &x) {
         auto index = x.pc & 0x3FF;
         bool btb_match = btb[index].valid && (btb[index].pc == x.pc);
         if (btb_match) {
-            btb[index].state = (x.branchTaken) ? max(btb[index].state, (1<<BUFFER_DEPTH)-1) : min(btb[index].state, 0);
+            btb[index].state = (x.branchTaken) ? min(btb[index].state+1, (1<<BUFFER_DEPTH)-1) : max(btb[index].state-1, 0);
             btb[index].target = x.jumpTarget;
         }else {
             btb[index].state = x.branchTaken ? (1<<(BUFFER_DEPTH-1)) : (1<<(BUFFER_DEPTH-1))-1;

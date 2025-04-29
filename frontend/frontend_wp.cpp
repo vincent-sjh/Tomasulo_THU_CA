@@ -2,7 +2,7 @@
 #include "with_predict.h"
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
-#define BUFFER_DEPTH 3
+#define BUFFER_DEPTH 1
 FrontendWithPredict::FrontendWithPredict(const std::vector<unsigned> &inst)
     : Frontend(inst) {
     for (auto &entry : btb) {
